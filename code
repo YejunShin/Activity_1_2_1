@@ -1,0 +1,65 @@
+#-----import statements-----
+import turtle as trtl
+import random
+#-----game configuration----
+t=trtl.Turtle()
+score_writer=trtl.Turtle()
+t.speed(0)
+spot_color = "pink"
+score=0
+font_setup=("Arial", 20, "normal")
+timer = 30
+counter_interval = 1000
+timer_up = False
+score_writer.speed(0)
+#-----initialize turtle-----
+t.shape("circle")
+t.shapesize(2)
+t.fillcolor("black")
+score_writer.penup()
+score_writer.goto(-380,290)
+colors=["purple","blue","green","yellow"]
+counter =  trtl.Turtle()
+#-----game functions--------
+def change_size():
+	size=[1,2,3,4]
+	t.turtlesize(random.choice(size))
+def change_color():
+	t.color(random.choice(colors))
+	t.stamp()
+	t.color("black")
+def change_position():
+		t.penup()
+		xpos=random.randint(-400,400)
+		ypos=random.randint(-300,300)
+		t.goto(xpos,ypos)
+counter.penup()
+counter.goto(-380,250)
+def countdown():
+  global timer, timer_up
+  counter.clear()
+  if timer <= 0:
+    counter.write("Time's Up", font=font_setup)
+    timer_up = True
+  else:
+    counter.write("Timer: " + str(timer), font=font_setup)
+    timer -= 1
+    counter.getscreen().ontimer(countdown, counter_interval) 
+def update_score():
+	global score
+	score+=1
+	score_writer.clear()
+	score_writer.write(score, font=font_setup)
+def spot_clicked(x,y):
+	global timer
+	if timer_up==False:
+		change_position()
+		update_score()
+		change_color()
+		change_size()
+#-----events----------------
+t.onclick(spot_clicked)
+wn = trtl.Screen()
+wn.bgcolor("red")
+wn.ontimer(countdown, counter_interval)
+wn.mainloop()
