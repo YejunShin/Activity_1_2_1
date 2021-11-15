@@ -1,107 +1,111 @@
+# a121_catch_a_turtle.py
 #-----import statements-----
 import turtle as trtl
-import random
+import random as rand
 import leaderboard as lb
+
 #-----game configuration----
+spotColor = "black"
+spotShape = "circle"
+spotSize = 2
+score = 0
+font_setup = ("Arial", 20, "normal")
+
+timer = 10
+counter_interval = 1000   #1000 represents 1 second
+timer_up = False
+
 # leaderboard variables
 leaderboard_file_name = "a122_leaderboard.txt"
 leader_names_list = []
 leader_scores_list = []
-player_name = input("Please enter your name:")
-t = trtl.Turtle()
-score_writer = trtl.Turtle()
-t.speed(0)
-spot_color = "pink"
-score = 0
-font_setup = ("Arial", 20, "normal")
-timer = 1
-counter_interval = 1000
-timer_up = False
-score_writer.speed(0)
-#-----initialize turtle-----
-t.shape("circle")
-t.shapesize(2)
-t.fillcolor("black")
-score_writer.penup()
-score_writer.goto(-380, 290)
-colors = ["purple", "blue", "green", "yellow"]
-counter = trtl.Turtle()
+player_name = input ("Please enter your name:")
 
+#-----initialize turtle-----
+spot = trtl.Turtle()
+spot.shape(spotShape)
+spot.turtlesize(spotSize)
+spot.fillcolor(spotColor)
+spot.penup()
+
+score_writer = trtl.Turtle()
+score_writer.hideturtle()
+score_writer.pu()
+score_writer.goto(-300,200)
+
+counter = trtl.Turtle()
+counter.hideturtle()
+counter.pu()
+counter.goto(150,200)
+
+colors = ["purple", "blue", "green", "yellow"]
 
 #-----game functions--------
-def manage_leaderboard():
-
-    global leader_scores_list
-    global leader_names_list
-    global score
-    global t
-
-    # load all the leaderboard records into the lists
-    lb.load_leaderboard(leaderboard_file_name,leader_names_list,leader_scores_list)
-    # TODO
-    if (len(leader_scores_list) < 5 or score > leader_scores_list[4]):
-        lb.update_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list, player_name, score)
-        lb.draw_leaderboard(leader_names_list, leader_scores_list, True, t, score)
-
-    else:
-        lb.draw_leaderboard(leader_names_list, leader_scores_list, False, t,
-                            score)
-
+def spot_clicked(x,y):
+  if timer_up == False:
+    change_color()
+    change_size()
+    change_position()
+    update_score()
 
 def change_size():
-    size = [1, 2, 3, 4]
-    t.turtlesize(random.choice(size))
-
+  size = [1, 2, 3, 4]
+  spot.turtlesize(rand.choice(size))
 
 def change_color():
-    t.color(random.choice(colors))
-    t.stamp()
-    t.color("black")
-
+  spot.color(rand.choice(colors))
+  spot.stamp()
+  spot.color("black")
 
 def change_position():
-    t.penup()
-    xpos = random.randint(-400, 400)
-    ypos = random.randint(-300, 300)
-    t.goto(xpos, ypos)
-
-
-counter.penup()
-counter.goto(-380, 250)
-
-
-def countdown():
-    global timer, timer_up
-    counter.clear()
-    if timer <= 0:
-        counter.write("Time's Up", font=font_setup)
-        timer_up = True
-        manage_leaderboard()
-    else:
-        counter.write("Timer: " + str(timer), font=font_setup)
-        timer -= 1
-        counter.getscreen().ontimer(countdown, counter_interval)
-
+  new_xpos = rand.randint(-200,200)
+  new_ypos = rand.randint(-100,100)
+  spot.hideturtle()
+  spot.goto(new_xpos,new_ypos)
+  spot.showturtle()
 
 def update_score():
-    global score
-    score += 1
-    score_writer.clear()
-    score_writer.write(score, font=font_setup)
+  global score
+  score += 1
+  score_writer.clear()
+  score_writer.write("Score: " + str(score), font=font_setup)
 
+def countdown():
+  global timer, timer_up
+  counter.clear()
+  if timer <= 0:
+    counter.write("Time's Up", font=font_setup)
+    timer_up = True
+    manage_leaderboard()
+  else:
+    counter.write("Timer: " + str(timer), font=font_setup)
+    timer -= 1
+    counter.getscreen().ontimer(countdown, counter_interval) 
 
-def spot_clicked(x, y):
-    global timer
-    if timer_up == False:
-        change_color()
-        change_size()
-        change_position()
-        update_score()
+# manages the leaderboard for top 5 scorers
+def manage_leaderboard():
+  
+  global leader_scores_list
+  global leader_names_list
+  global score
+  global spot
+
+  # load all the leaderboard records into the lists
+  lb.load_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list)
+
+  # TODO
+  if (len(leader_scores_list) < 5 or score > leader_scores_list[4]):
+    lb.update_leaderboard(leaderboard_file_name, leader_names_list, leader_scores_list, player_name, score)
+    lb.draw_leaderboard(leader_names_list, leader_scores_list, True, spot, score)
+
+  else:
+    lb.draw_leaderboard(leader_names_list, leader_scores_list, False, spot, score)
 
 
 #-----events----------------
-t.onclick(spot_clicked)
+
+spot.onclick(spot_clicked)
 wn = trtl.Screen()
-wn.bgcolor("red")
 wn.ontimer(countdown, counter_interval)
+wn.bgcolor("red")
 wn.mainloop()
